@@ -18,7 +18,6 @@ export const getProfiles = async (req, res, next) => {
     };
 
     const response = await PDLClient.person.search.elastic(params);
-    console.log(response.data);
 
     res.status(200).json(response.data);
   } catch (error) {

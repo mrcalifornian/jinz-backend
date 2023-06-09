@@ -10,6 +10,10 @@ export const genQuery = async (req, res, next) => {
     let prompt = req.body.prompt;
 
     console.log(prompt);
+    if (prompt === undefined) {
+      const error = new Error("No prompt provided");
+      throw error;
+    }
 
     let fullPrompt = `You are an professional software engineer with many years of experince. And your current task is to generate an elastic search v7 query for this prompt: "${prompt}", using only the fields provided in the example user model below. \n\nAny small mistake like using not present fields in your query, since it will impact to your reputation. \n\n
         If the prompt requires to search for fields not present in the model, just skip them, For example years of experinece.
@@ -24,29 +28,6 @@ export const genQuery = async (req, res, next) => {
         "web design",
         "css",
         "wordpress",
-        "web development",
-        "photoshop",
-        "html",
-        "indesign",
-        "php",
-        "mysql",
-        "animation",
-        "graphics",
-        "after effects",
-        "javascript",
-        "web applications",
-        "logo design",
-        "html5",
-        "storyboarding",
-        "adobe illustrator",
-        "adobe photoshop",
-        "cascading style sheets",
-        "angularjs",
-        "computer animation",
-        "game design",
-        "traditional animation",
-        "film editing",
-        "golive",
       ],
       job_company_name: "bitwise industries",
       job_company_website: "bitwiseindustries.com",
@@ -68,10 +49,10 @@ export const genQuery = async (req, res, next) => {
     const jsonEndIndex = queryText.lastIndexOf("}");
     const eQuery = queryText.slice(jsonStartIndex, jsonEndIndex + 1);
 
-    console.log(eQuery);
     req.query = eQuery;
     next();
   } catch (error) {
     res.json(error);
+    console.log(error);
   }
 };
