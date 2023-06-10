@@ -19,9 +19,9 @@ export const getProfiles = async (req, res, next) => {
 
     const response = await PDLClient.person.search.elastic(params);
 
-    res.status(200).json(response.data);
+    res.status(200).json({ data: response.data });
   } catch (error) {
-    res.json(error);
+    res.json({ message: error.message });
     console.log(error);
   }
 };

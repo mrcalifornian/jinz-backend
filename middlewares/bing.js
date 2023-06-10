@@ -6,6 +6,27 @@ const api = new BingChat({
 });
 
 export const genQuery = async (req, res, next) => {
+  const timeoutDuration = 30 * 1000;
+
+  function sendMessageWithTimeout(fullPrompt, options) {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error("Request timed out"));
+      }, timeoutDuration);
+
+      api
+        .sendMessage(fullPrompt, options)
+        .then((response) => {
+          clearTimeout(timeout);
+          resolve(response);
+        })
+        .catch((error) => {
+          clearTimeout(timeout);
+          reject(error);
+        });
+    });
+  }
+
   try {
     let prompt = req.body.prompt;
 
@@ -39,7 +60,7 @@ export const genQuery = async (req, res, next) => {
       location_continent: "north america",
     }`;
 
-    const resp = await api.sendMessage(fullPrompt, {
+    const resp = await sendMessageWithTimeout(fullPrompt, {
       variant: "precise",
     });
 
@@ -52,7 +73,7 @@ export const genQuery = async (req, res, next) => {
     req.query = eQuery;
     next();
   } catch (error) {
-    res.json(error);
+    res.status(400).json({ message: error.message });
     console.log(error);
   }
 };
